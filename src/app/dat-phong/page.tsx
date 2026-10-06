@@ -69,7 +69,7 @@ interface DatPhongPageProps {
 }
 
 export default function DatPhongPage({ onBackToHome }: DatPhongPageProps) {
-  const [serviceType, setServiceType] = useState<'suite' | 'deluxe' | 'twin' | 'dining' | 'banquet'>('suite');
+  const [serviceType, setServiceType] = useState<'superior' | 'deluxe' | 'suite' | 'vip' | 'dining' | 'banquet'>('superior');
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
   const [checkInDate, setCheckInDate] = useState('2026-09-25');
@@ -80,11 +80,12 @@ export default function DatPhongPage({ onBackToHome }: DatPhongPageProps) {
   const [isSuccess, setIsSuccess] = useState(false);
   const [bookingCode, setBookingCode] = useState('');
 
-  // Giá tính toán nhanh
+  // Giá tính toán nhanh theo bảng giá niêm yết chính thức Ánh Nguyệt Hotel
   const priceMap: Record<string, { name: string; price: number; originalPrice: number }> = {
-    suite: { name: 'Suite Tổng Thống Hoàng Gia', price: 1850000, originalPrice: 2200000 },
-    deluxe: { name: 'Deluxe King Hướng Phố', price: 890000, originalPrice: 1100000 },
-    twin: { name: 'Grand Premium Twin (2 Giường)', price: 990000, originalPrice: 1250000 },
+    superior: { name: 'SUPERIOR Room', price: 590000, originalPrice: 700000 },
+    deluxe: { name: 'Deluxe Room', price: 690000, originalPrice: 800000 },
+    suite: { name: 'Suite Room', price: 890000, originalPrice: 1050000 },
+    vip: { name: 'Vip Room', price: 1200000, originalPrice: 1450000 },
     dining: { name: 'Bàn Tiệc Đặc Sản Cua Năm Căn Cà Mau', price: 1200000, originalPrice: 1450000 },
     banquet: { name: 'Sảnh Hội Nghị & Tiệc Cưới VIP', price: 5000000, originalPrice: 6000000 },
   };
@@ -273,11 +274,12 @@ export default function DatPhongPage({ onBackToHome }: DatPhongPageProps) {
                 <label className="block text-xs font-semibold text-[#d4af37] uppercase tracking-wider mb-3">
                   1. Chọn Loại Phòng / Dịch Vụ Cần Đặt
                 </label>
-                <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
                   {[
-                    { id: 'suite', label: 'Suite Tổng Thống', sub: '1.850.000đ' },
-                    { id: 'deluxe', label: 'Deluxe Hướng Phố', sub: '890.000đ' },
-                    { id: 'twin', label: 'Grand Twin 2 Giường', sub: '990.000đ' },
+                    { id: 'superior', label: 'SUPERIOR Room', sub: '590.000đ' },
+                    { id: 'deluxe', label: 'Deluxe Room', sub: '690.000đ' },
+                    { id: 'suite', label: 'Suite Room', sub: '890.000đ' },
+                    { id: 'vip', label: 'Vip Room', sub: '1.200.000đ' },
                     { id: 'dining', label: 'Tiệc Cua Năm Căn', sub: 'Từ 1.200.000đ' },
                     { id: 'banquet', label: 'Hội Nghị / Tiệc Cưới', sub: 'Tư vấn riêng' },
                   ].map((item) => (

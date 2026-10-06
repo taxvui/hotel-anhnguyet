@@ -9,6 +9,7 @@ import {
   Calendar, 
   Users, 
   ChevronRight, 
+  ChevronLeft,
   Star, 
   Maximize2, 
   Bed, 
@@ -21,7 +22,14 @@ import {
   Check, 
   Clock, 
   Sparkles,
-  ExternalLink
+  ExternalLink,
+  Eye,
+  ZoomIn,
+  X,
+  FileText,
+  Calculator,
+  CheckCircle2,
+  Image as ImageIcon
 } from 'lucide-react';
 import { 
   HOTEL_INFO, 
@@ -29,8 +37,14 @@ import {
   MENU_SPECIALTIES, 
   HIGHLIGHTS_DATA, 
   TESTIMONIALS,
+  SET_MENUS_DATA,
+  ORIGINAL_MENU_SCANS,
+  HOTEL_GALLERY_IMAGES,
   Room,
-  MenuItem 
+  MenuItem,
+  SetMenuPackage,
+  OriginalMenuScan,
+  GalleryItem
 } from '../data/hotelData';
 import { BookingModal } from '../components/BookingModal';
 import { NewsSection } from '../components/NewsSection';
@@ -53,8 +67,18 @@ export default function HomePage({
   const [quickDate, setQuickDate] = useState('2026-09-25');
   const [quickGuests, setQuickGuests] = useState('2');
 
-  // Menu category filter
+  // Restaurant Section Sub-tabs & Quotation State (Source: https://anhnguyethotel.com/our-menus/)
+  const [restaurantSubTab, setRestaurantSubTab] = useState<'quotation' | 'scans' | 'alacarte'>('quotation');
+  const [selectedSetMenuId, setSelectedSetMenuId] = useState<string>('menu-150k');
+  const [calcPaxCount, setCalcPaxCount] = useState<number>(20);
+  const [activeScanPage, setActiveScanPage] = useState<OriginalMenuScan | null>(null);
+
+  // Menu category filter for A La Carte
   const [menuFilter, setMenuFilter] = useState<'all' | 'crab' | 'seafood' | 'local' | 'banquet'>('all');
+
+  // Gallery Section Filter & Lightbox (All authentic photos from anhnguyethotel.com)
+  const [galleryFilter, setGalleryFilter] = useState<'all' | 'rooms' | 'restaurant' | 'menus' | 'events' | 'pool'>('all');
+  const [activeLightboxIndex, setActiveLightboxIndex] = useState<number | null>(null);
 
   // Active room preview
   const [activeRoomIndex, setActiveRoomIndex] = useState(0);
@@ -164,8 +188,8 @@ export default function HomePage({
                 {/* Visual Glass Overlay & Image */}
                 <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-neutral-900 group">
                   <img
-                    src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1200&q=80"
-                    alt="Không gian phòng Suite Ánh Nguyệt Cà Mau"
+                    src="https://anhnguyethotel.com/wp-content/uploads/2025/07/IMG_9612.jpg"
+                    alt="Không gian phòng nghỉ Khách sạn Ánh Nguyệt Cà Mau"
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                     referrerPolicy="no-referrer"
                     onError={(e) => {
@@ -178,20 +202,20 @@ export default function HomePage({
                   {/* Corner Badge */}
                   <div className="absolute top-4 left-4 py-1 px-3 rounded-xl bg-black/60 backdrop-blur-md border border-white/20 text-[11px] text-[#f4e8d0] font-medium flex items-center gap-1.5">
                     <Sparkles className="w-3.5 h-3.5 text-[#d4af37]" />
-                    <span>Không Gian VIP Ánh Nguyệt</span>
+                    <span>Không Gian Nghỉ Dưỡng Ánh Nguyệt</span>
                   </div>
 
                   {/* Bottom Text Over Image */}
                   <div className="absolute bottom-4 left-4 right-4 text-left">
                     <span className="text-[11px] uppercase tracking-wider text-[#d4af37] font-semibold">
-                      Phòng Suite Tổng Thống
+                      Phòng Nghỉ Chuẩn 4 Sao
                     </span>
                     <h3 className="text-lg font-bold text-white font-display">
                       Tầm Nhìn Ôm Trọn Trung Tâm Cà Mau
                     </h3>
                     <div className="mt-2 flex items-center justify-between text-xs text-neutral-300">
-                      <span>Bồn tắm sục Jacuzzi · King Bed 2.2m</span>
-                      <span className="font-semibold text-[#d4af37]">Từ 2.850.000đ/đêm</span>
+                      <span>Tiện nghi cao cấp · 4 hạng phòng</span>
+                      <span className="font-semibold text-[#d4af37]">Chỉ từ 590.000đ/đêm</span>
                     </div>
                   </div>
                 </div>
@@ -392,8 +416,8 @@ export default function HomePage({
             </p>
           </div>
 
-          {/* Rooms Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Rooms Grid - Hiển thị 3 cột chuẩn */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {ROOMS_DATA.map((room) => (
               <div
                 key={room.id}
@@ -411,15 +435,15 @@ export default function HomePage({
                         (e.currentTarget as HTMLElement).style.display = 'none';
                       }}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent" />
                     
                     {room.isPopular && (
-                      <div className="absolute top-4 left-4 py-1 px-3 rounded-xl bg-[#d4af37] text-black text-xs font-semibold shadow-md">
-                        Hạng Phòng Được Yêu Thích Nhất
+                      <div className="absolute top-3.5 left-3.5 py-1 px-3 rounded-xl bg-[#d4af37] text-black text-xs font-semibold shadow-md">
+                        Hạng Phòng VIP Yêu Thích
                       </div>
                     )}
 
-                    <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-xs text-neutral-200">
+                    <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-[11px] text-neutral-200">
                       <span className="px-2.5 py-1 rounded-lg bg-black/60 backdrop-blur-md border border-white/15">
                         {room.area}
                       </span>
@@ -430,29 +454,34 @@ export default function HomePage({
                   </div>
 
                   {/* Room Details */}
-                  <div className="p-6">
-                    <div className="flex items-start justify-between gap-4 mb-2">
-                      <h3 className="font-display text-xl font-bold text-white group-hover:text-[#d4af37] transition-colors">
-                        {room.name}
-                      </h3>
-                      <div className="text-right whitespace-nowrap">
-                        <span className="text-lg sm:text-xl font-bold text-[#d4af37] font-display tabular-nums">
+                  <div className="p-5 sm:p-6">
+                    <div className="flex items-start justify-between gap-3 mb-2.5">
+                      <div>
+                        <span className="text-[11px] text-[#d4af37] font-semibold uppercase tracking-wider block">
+                          {room.category}
+                        </span>
+                        <h3 className="font-display text-lg sm:text-xl font-bold text-white group-hover:text-[#d4af37] transition-colors leading-snug">
+                          {room.name}
+                        </h3>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <span className="text-base sm:text-lg font-bold text-[#d4af37] font-display tabular-nums">
                           {room.pricePerNight.toLocaleString('vi-VN')}đ
                         </span>
-                        <span className="text-[11px] text-neutral-400 block">/ đêm</span>
+                        <span className="text-[10px] text-neutral-400 block">/ đêm</span>
                       </div>
                     </div>
 
-                    <p className="text-xs sm:text-sm text-neutral-300 line-clamp-2 mb-4 leading-relaxed font-light">
+                    <p className="text-xs text-neutral-300 line-clamp-2 mb-3.5 leading-relaxed font-light">
                       {room.description}
                     </p>
 
                     {/* Features list */}
-                    <div className="space-y-2 pt-2 border-t border-white/10">
+                    <div className="space-y-1.5 pt-3 border-t border-white/10">
                       {room.features.slice(0, 3).map((feat, idx) => (
                         <div key={idx} className="flex items-center gap-2 text-xs text-neutral-300">
                           <Check className="w-3.5 h-3.5 text-[#d4af37] shrink-0" />
-                          <span>{feat}</span>
+                          <span className="truncate">{feat}</span>
                         </div>
                       ))}
                     </div>
@@ -460,130 +489,524 @@ export default function HomePage({
                 </div>
 
                 {/* Room Card Action */}
-                <div className="p-6 pt-0">
+                <div className="p-5 sm:p-6 pt-0">
                   <button
                     onClick={() => handleOpenBooking('room', room.id)}
-                    className="w-full liquid-btn-champagne py-3 rounded-2xl text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 cursor-pointer shadow-md"
+                    className="w-full liquid-btn-champagne py-2.5 sm:py-3 rounded-2xl text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 cursor-pointer shadow-md"
                   >
-                    <span>Đặt Phòng {room.name}</span>
+                    <span>Đặt Hạng Phòng Này</span>
                     <ArrowUpRight className="w-4 h-4" />
                   </button>
                 </div>
               </div>
             ))}
+
+            {/* Card 5: Ưu Đãi Khách Đoàn & Doanh Nghiệp (Hoàn thiện lưới 3 cột cân đối) */}
+            <div className="liquid-glass-card rounded-3xl p-6 border border-white/10 flex flex-col justify-between bg-gradient-to-br from-white/5 to-[#d4af37]/5">
+              <div>
+                <div className="w-10 h-10 rounded-2xl bg-[#d4af37]/20 border border-[#d4af37]/40 flex items-center justify-center text-[#d4af37] mb-4">
+                  <Users className="w-5 h-5" />
+                </div>
+                <span className="text-[11px] text-[#d4af37] font-semibold uppercase tracking-wider block">
+                  Dành Cho Đoàn & Công Ty
+                </span>
+                <h3 className="font-display text-lg sm:text-xl font-bold text-white mt-1 mb-2">
+                  Chính Sách Khách Đoàn Doanh Nghiệp
+                </h3>
+                <p className="text-xs text-neutral-300 leading-relaxed font-light mb-4">
+                  Chiết khấu đặc biệt khi đặt từ 5 phòng trở lên. Cung cấp đầy đủ hợp đồng, xuất hóa đơn VAT điện tử nhanh chóng, hỗ trợ phòng hội nghị và xe đón tiễn sân bay Cà Mau.
+                </p>
+                <div className="space-y-2 text-xs text-neutral-300">
+                  <div className="flex items-center gap-2">
+                    <Check className="w-3.5 h-3.5 text-[#d4af37]" />
+                    <span>Chiết khấu trực tiếp theo số lượng phòng</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Check className="w-3.5 h-3.5 text-[#d4af37]" />
+                    <span>Hóa đơn VAT và thủ tục công tác chuẩn chỉnh</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Check className="w-3.5 h-3.5 text-[#d4af37]" />
+                    <span>Miễn phí vé trải nghiệm hồ bơi ngoài trời</span>
+                  </div>
+                </div>
+              </div>
+              <div className="pt-6">
+                <a
+                  href={`tel:${HOTEL_INFO.phoneMobile.replace(/\s+/g, '')}`}
+                  className="w-full liquid-btn-ghost py-2.5 sm:py-3 rounded-2xl text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 cursor-pointer border border-[#d4af37]/30 hover:border-[#d4af37] text-[#d4af37]"
+                >
+                  <Phone className="w-4 h-4" />
+                  <span>Hotline Quản Lý: {HOTEL_INFO.phoneMobile}</span>
+                </a>
+              </div>
+            </div>
+
+            {/* Card 6: Đặt Phòng Trực Tiếp - Giá Tốt Nhất (Hoàn thiện lưới 3 cột cân đối) */}
+            <div className="liquid-glass-card rounded-3xl p-6 border border-white/10 flex flex-col justify-between bg-gradient-to-br from-white/5 to-emerald-500/5">
+              <div>
+                <div className="w-10 h-10 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 mb-4">
+                  <ShieldCheck className="w-5 h-5" />
+                </div>
+                <span className="text-[11px] text-emerald-400 font-semibold uppercase tracking-wider block">
+                  Đảm Bảo Quyền Lợi Khách Hàng
+                </span>
+                <h3 className="font-display text-lg sm:text-xl font-bold text-white mt-1 mb-2">
+                  Cam Kết Giá Trực Tiếp Tốt Nhất
+                </h3>
+                <p className="text-xs text-neutral-300 leading-relaxed font-light mb-4">
+                  Đặt phòng trực tiếp tại Khách sạn Ánh Nguyệt để nhận mức giá ưu đãi nhất không qua trung gian. Giữ phòng chỉ trong 3 phút, linh hoạt nhận phòng sớm và hỗ trợ 24/7.
+                </p>
+                <div className="space-y-2 text-xs text-neutral-300">
+                  <div className="flex items-center gap-2">
+                    <Check className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>Hotline Lễ Tân 24/7: {HOTEL_INFO.hotline}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Check className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>Nhận phòng nhanh chóng chỉ cần đọc số điện thoại</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Check className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>Vị trí trung tâm đại lộ Phan Ngọc Hiển, TP. Cà Mau</span>
+                  </div>
+                </div>
+              </div>
+              <div className="pt-6">
+                <a
+                  href={`tel:${HOTEL_INFO.hotline.replace(/\s+/g, '')}`}
+                  className="w-full liquid-btn-champagne py-2.5 sm:py-3 rounded-2xl text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 cursor-pointer shadow-md"
+                >
+                  <Phone className="w-4 h-4" />
+                  <span>Gọi Lễ Tân Giữ Phòng Ngay</span>
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
       {/* ==========================================================
-          ẨM THỰC ĐẶC SẢN CÀ MAU (Cua Năm Căn, Cá Thòi Lòi...)
+          ẨM THỰC ĐẶC SẢN & BÁO GIÁ NHÀ HÀNG ÁNH NGUYỆT 
+          (Nguồn chính thức: https://anhnguyethotel.com/our-menus/)
           ========================================================== */}
       <section id="dac-san" className="py-20 px-4 sm:px-6 lg:px-8 border-t border-white/5 relative">
         <div className="max-w-7xl mx-auto">
           {/* Section Header */}
           <div className="text-center max-w-3xl mx-auto mb-10 space-y-3">
             <span className="text-xs uppercase tracking-[0.25em] text-[#d4af37] font-semibold">
-              Mỹ Vị Đất Mũi Tại Nhà Hàng Ánh Nguyệt
+              Mỹ Vị Đất Mũi & Báo Giá Thực Đơn 2025
             </span>
             <h2 className="text-2xl sm:text-4xl font-bold font-display text-white text-balance">
-              Thực Đơn Cua Cà Mau & Đặc Sản Đầm Ngập Mặn
+              Nhà Hàng Ẩm Thực Ánh Nguyệt
             </h2>
             <p className="text-neutral-400 text-sm sm:text-base leading-relaxed">
-              Cua Năm Căn chính gốc được vớt trực tiếp từ bể nuôi nước lợ, kết hợp cùng tài hoa của đầu bếp hơn 20 năm gắn bó với hương vị Nam Bộ.
+              Chuyên phục vụ cơm đoàn du lịch, công tác, tiệc hải sản Cua Năm Căn tươi sống và sự kiện hội nghị với thực đơn phong phú từ 110.000đ/khách.
             </p>
           </div>
 
-          {/* Interactive Filter Tabs (Functional Segmented Button Bar) */}
-          <div className="flex flex-wrap items-center justify-center gap-2 mb-12">
-            {[
-              { id: 'all', label: 'Tất Cả Món Ngon' },
-              { id: 'crab', label: 'Cua Cà Mau Trứ Danh' },
-              { id: 'seafood', label: 'Hải Sản Đất Mũi' },
-              { id: 'local', label: 'Món Đồng & Lẩu Mắm' },
-              { id: 'banquet', label: 'Set Yến Tiệc VIP' },
-            ].map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setMenuFilter(tab.id as any)}
-                className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all cursor-pointer whitespace-nowrap ${
-                  menuFilter === tab.id
-                    ? 'bg-[#d4af37] text-black font-semibold shadow-lg shadow-[#d4af37]/20'
-                    : 'bg-white/5 text-neutral-300 hover:text-white hover:bg-white/10 border border-white/10'
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
+          {/* Sub-Tabs Switcher for Restaurant Sections */}
+          <div className="flex flex-wrap items-center justify-center gap-2 mb-10">
+            <button
+              onClick={() => setRestaurantSubTab('quotation')}
+              className={`px-5 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold transition-all cursor-pointer flex items-center gap-2 ${
+                restaurantSubTab === 'quotation'
+                  ? 'bg-gradient-to-r from-[#d4af37] to-[#b89325] text-black shadow-lg shadow-[#d4af37]/25'
+                  : 'bg-white/5 text-neutral-300 hover:text-white hover:bg-white/10 border border-white/10'
+              }`}
+            >
+              <Calculator className="w-4 h-4" />
+              <span>Báo Giá Cơm Đoàn (110K - 250K)</span>
+            </button>
+            <button
+              onClick={() => setRestaurantSubTab('scans')}
+              className={`px-5 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold transition-all cursor-pointer flex items-center gap-2 ${
+                restaurantSubTab === 'scans'
+                  ? 'bg-gradient-to-r from-[#d4af37] to-[#b89325] text-black shadow-lg shadow-[#d4af37]/25'
+                  : 'bg-white/5 text-neutral-300 hover:text-white hover:bg-white/10 border border-white/10'
+              }`}
+            >
+              <FileText className="w-4 h-4" />
+              <span>Bản Scan Thực Đơn Niêm Yết (6 Trang Gốc)</span>
+            </button>
+            <button
+              onClick={() => setRestaurantSubTab('alacarte')}
+              className={`px-5 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold transition-all cursor-pointer flex items-center gap-2 ${
+                restaurantSubTab === 'alacarte'
+                  ? 'bg-gradient-to-r from-[#d4af37] to-[#b89325] text-black shadow-lg shadow-[#d4af37]/25'
+                  : 'bg-white/5 text-neutral-300 hover:text-white hover:bg-white/10 border border-white/10'
+              }`}
+            >
+              <Utensils className="w-4 h-4" />
+              <span>Món Đặc Sản Gọi Món (A La Carte)</span>
+            </button>
           </div>
 
-          {/* Menu Items Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredMenu.map((item) => (
-              <div
-                key={item.id}
-                className="liquid-glass-card rounded-3xl overflow-hidden border border-white/10 flex flex-col justify-between group"
-              >
-                <div>
-                  {/* Dish Image */}
-                  <div className="relative aspect-[4/3] overflow-hidden bg-neutral-900">
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                      referrerPolicy="no-referrer"
-                      onError={(e) => {
-                        (e.currentTarget as HTMLElement).style.display = 'none';
-                      }}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-
-                    {item.badge && (
-                      <div className="absolute top-3 left-3 py-1 px-2.5 rounded-lg bg-[#d4af37] text-black text-[11px] font-semibold shadow-sm">
-                        {item.badge}
-                      </div>
-                    )}
-
-                    <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-xs text-neutral-200">
-                      <span className="text-[11px] text-[#f4e8d0] font-medium">
-                        {item.highlight}
-                      </span>
+          {/* TAB 1: BÁO GIÁ CƠM ĐOÀN CHI TIẾT (Theo nguồn https://anhnguyethotel.com/our-menus/) */}
+          {restaurantSubTab === 'quotation' && (
+            <div className="space-y-10 animate-in fade-in duration-300">
+              {/* Official Commitment Banner */}
+              <div className="liquid-glass p-6 sm:p-8 rounded-3xl border border-[#d4af37]/30 bg-gradient-to-br from-[#121820] to-[#0c1016]">
+                <div className="max-w-3xl">
+                  <span className="inline-block px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider bg-[#d4af37]/20 text-[#d4af37] border border-[#d4af37]/40 mb-3">
+                    Thông Điệp Từ Nhà Hàng Ánh Nguyệt
+                  </span>
+                  <h3 className="text-xl sm:text-2xl font-bold font-display text-white mb-2">
+                    NHÀ HÀNG ÁNH NGUYỆT – CHUYÊN PHỤC VỤ CƠM ĐOÀN CHẤT LƯỢNG – GIÁ HỢP LÝ
+                  </h3>
+                  <p className="text-xs sm:text-sm text-neutral-300 leading-relaxed font-light mb-6">
+                    Tọa lạc tại trung tâm TP. Cà Mau, Nhà hàng Ánh Nguyệt là điểm đến lý tưởng cho các đoàn khách du lịch, công ty, học sinh – sinh viên, và các tour lữ hành. Chúng tôi chuyên phục vụ cơm đoàn số lượng lớn với thực đơn đa dạng, món ăn phong phú, đậm đà hương vị miền Tây Nam Bộ.
+                  </p>
+                  
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="flex items-center gap-2.5 text-xs text-neutral-200">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                      <span>Không gian rộng rãi, thoáng mát, sức chứa hàng trăm khách</span>
+                    </div>
+                    <div className="flex items-center gap-2.5 text-xs text-neutral-200">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                      <span>Phục vụ nhanh chóng, chuyên nghiệp, đúng giờ theo lịch trình</span>
+                    </div>
+                    <div className="flex items-center gap-2.5 text-xs text-neutral-200">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                      <span>Thực đơn linh hoạt, có thể đặt trước theo yêu cầu đặc biệt</span>
+                    </div>
+                    <div className="flex items-center gap-2.5 text-xs text-neutral-200">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                      <span>Giá cả cạnh tranh từ 110K – 250K/suất, chất lượng đảm bảo</span>
                     </div>
                   </div>
-
-                  {/* Dish Info */}
-                  <div className="p-5">
-                    <div className="flex items-start justify-between gap-3 mb-2">
-                      <h3 className="font-display text-base font-bold text-white group-hover:text-[#d4af37] transition-colors leading-snug">
-                        {item.name}
-                      </h3>
-                      <div className="text-right whitespace-nowrap">
-                        <span className="text-sm font-bold text-[#d4af37] font-display tabular-nums">
-                          {item.price}
-                        </span>
-                        <span className="text-[10px] text-neutral-400 block">{item.unit}</span>
-                      </div>
-                    </div>
-
-                    <p className="text-xs text-neutral-300 leading-relaxed font-light line-clamp-3">
-                      {item.description}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="p-5 pt-0">
-                  <button
-                    onClick={() => handleOpenBooking('table', undefined, item.name)}
-                    className="w-full liquid-btn-ghost py-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer hover:border-[#d4af37]/40"
-                  >
-                    <Utensils className="w-3.5 h-3.5 text-[#d4af37]" />
-                    <span>Đặt Bàn Thưởng Thức Món Này</span>
-                  </button>
                 </div>
               </div>
-            ))}
-          </div>
 
-          {/* Restaurant Booking Banner */}
+              {/* Price Tier Selector & Live Quotation Calculator */}
+              <div className="liquid-glass-card p-6 sm:p-8 rounded-3xl border border-white/10">
+                <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 pb-6 border-b border-white/10">
+                  <div>
+                    <span className="text-xs font-semibold uppercase tracking-wider text-[#d4af37] block">
+                      1. Chọn Mức Giá Suất Ăn Đoàn
+                    </span>
+                    <h4 className="text-lg font-bold text-white mt-0.5">
+                      Bảng Giá Niêm Yết Theo Suất (VNĐ / Khách)
+                    </h4>
+                  </div>
+
+                  {/* Calculator Control */}
+                  <div className="flex flex-wrap items-center gap-3 bg-black/40 p-3 rounded-2xl border border-white/10">
+                    <span className="text-xs text-neutral-300 font-medium">Số lượng khách đoàn:</span>
+                    <div className="flex items-center gap-1.5">
+                      {[10, 20, 30, 50, 100].map((num) => (
+                        <button
+                          key={num}
+                          type="button"
+                          onClick={() => setCalcPaxCount(num)}
+                          className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                            calcPaxCount === num
+                              ? 'bg-[#d4af37] text-black'
+                              : 'bg-white/5 text-neutral-300 hover:bg-white/10'
+                          }`}
+                        >
+                          {num} khách
+                        </button>
+                      ))}
+                    </div>
+                    <input
+                      type="number"
+                      min={1}
+                      max={500}
+                      value={calcPaxCount}
+                      onChange={(e) => setCalcPaxCount(Math.max(1, parseInt(e.target.value) || 1))}
+                      className="w-16 px-2 py-1 rounded-lg bg-white/10 border border-white/20 text-xs text-white text-center font-bold focus:outline-none focus:border-[#d4af37]"
+                    />
+                  </div>
+                </div>
+
+                {/* Price Tier Pills */}
+                <div className="flex flex-wrap gap-2 pt-6 pb-4">
+                  {SET_MENUS_DATA.map((pkg) => (
+                    <button
+                      key={pkg.id}
+                      type="button"
+                      onClick={() => setSelectedSetMenuId(pkg.id)}
+                      className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                        selectedSetMenuId === pkg.id
+                          ? 'bg-[#d4af37] text-black shadow-md shadow-[#d4af37]/20 scale-105'
+                          : 'bg-white/5 text-neutral-300 hover:text-white hover:bg-white/10 border border-white/10'
+                      }`}
+                    >
+                      {pkg.priceFormatted} / khách
+                    </button>
+                  ))}
+                </div>
+
+                {/* Quotation Summary Card for Selected Tier */}
+                {(() => {
+                  const currentPkg = SET_MENUS_DATA.find((p) => p.id === selectedSetMenuId) || SET_MENUS_DATA[4];
+                  const totalEstimated = currentPkg.pricePerPax * calcPaxCount;
+                  return (
+                    <div className="mt-6 pt-6 border-t border-white/10">
+                      <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-amber-500/10 via-[#d4af37]/15 to-transparent border border-[#d4af37]/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+                        <div>
+                          <div className="text-xs text-[#d4af37] font-semibold uppercase tracking-wider">
+                            Dự Toán Chi Phí Tạm Tính ({calcPaxCount} Khách)
+                          </div>
+                          <div className="text-xl sm:text-2xl font-bold font-display text-white mt-0.5">
+                            {totalEstimated.toLocaleString('vi-VN')} đ
+                            <span className="text-xs text-neutral-400 font-normal ml-2">
+                              ({currentPkg.priceFormatted} x {calcPaxCount} khách)
+                            </span>
+                          </div>
+                          <div className="text-[11px] text-neutral-400 mt-1">
+                            {currentPkg.note}
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-3">
+                          <button
+                            type="button"
+                            onClick={() => handleOpenBooking('table', undefined, `Cơm đoàn ${currentPkg.priceFormatted} (${calcPaxCount} khách)`)}
+                            className="liquid-btn-champagne px-5 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap cursor-pointer shadow-md flex items-center gap-1.5"
+                          >
+                            <Calendar className="w-3.5 h-3.5" />
+                            <span>Đặt Suất Ăn Này Ngay</span>
+                          </button>
+                          <a
+                            href={`tel:${HOTEL_INFO.hotline.replace(/\s+/g, '')}`}
+                            className="px-4 py-2.5 rounded-xl text-xs font-bold text-[#d4af37] bg-white/5 hover:bg-white/10 border border-[#d4af37]/30 whitespace-nowrap flex items-center gap-1.5"
+                          >
+                            <Phone className="w-3.5 h-3.5" />
+                            <span>Tư Vấn: {HOTEL_INFO.hotline}</span>
+                          </a>
+                        </div>
+                      </div>
+
+                      {/* Detail Sets of this tier */}
+                      <div>
+                        <div className="text-xs font-bold text-neutral-300 uppercase tracking-wider mb-4 flex items-center justify-between">
+                          <span>Các Thực Đơn Thuộc Mức Giá {currentPkg.priceFormatted}:</span>
+                          <span className="text-neutral-500 text-[11px]">Đã bao gồm Cơm trắng + Trái cây + Trà đá</span>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                          {currentPkg.sets.map((set, idx) => (
+                            <div
+                              key={idx}
+                              className="p-4 rounded-2xl bg-white/5 border border-white/10 hover:border-[#d4af37]/40 transition-all flex flex-col justify-between"
+                            >
+                              <div>
+                                <div className="flex items-center justify-between pb-2 mb-3 border-b border-white/10">
+                                  <span className="font-display font-bold text-sm text-[#d4af37]">
+                                    {set.setName}
+                                  </span>
+                                  <span className="text-[10px] text-neutral-400 bg-white/5 px-2 py-0.5 rounded-md">
+                                    {set.dishes.length} món
+                                  </span>
+                                </div>
+                                <ul className="space-y-2 text-xs text-neutral-200">
+                                  {set.dishes.map((dish, dIdx) => (
+                                    <li key={dIdx} className="flex items-start gap-2">
+                                      <Check className="w-3.5 h-3.5 text-[#d4af37] shrink-0 mt-0.5" />
+                                      <span className="leading-snug">{dish}</span>
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+
+                              <button
+                                type="button"
+                                onClick={() => handleOpenBooking('table', undefined, `Cơm đoàn ${currentPkg.priceFormatted} - ${set.setName}`)}
+                                className="mt-4 w-full py-1.5 rounded-lg bg-white/5 hover:bg-[#d4af37]/20 hover:text-[#d4af37] border border-white/10 text-[11px] font-semibold text-neutral-300 transition-colors cursor-pointer"
+                              >
+                                Chọn {set.setName}
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })()}
+              </div>
+            </div>
+          )}
+
+          {/* TAB 2: BẢN SCAN THỰC ĐƠN GỐC TỪ WEBSITE (6 Trang Chính Thức) */}
+          {restaurantSubTab === 'scans' && (
+            <div className="space-y-8 animate-in fade-in duration-300">
+              <div className="text-center max-w-2xl mx-auto mb-6">
+                <span className="text-xs uppercase tracking-wider text-[#d4af37] font-semibold block mb-1">
+                  Tài Liệu Niêm Yết Chính Thức 2025
+                </span>
+                <h3 className="text-xl sm:text-2xl font-bold font-display text-white">
+                  6 Trang Scan Thực Đơn Gốc Nhà Hàng Ánh Nguyệt
+                </h3>
+                <p className="text-xs text-neutral-400 mt-2">
+                  Bản scan trực tiếp được đăng tải tại website chính thức anhnguyethotel.com/our-menus/. Quý khách bấm vào từng trang để phóng to xem rõ nét chi tiết từng món ăn.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {ORIGINAL_MENU_SCANS.map((scan) => (
+                  <div
+                    key={scan.page}
+                    className="liquid-glass-card rounded-3xl overflow-hidden border border-white/10 group flex flex-col justify-between"
+                  >
+                    <div>
+                      {/* Scan Preview Image */}
+                      <div 
+                        onClick={() => setActiveScanPage(scan)}
+                        className="relative aspect-[3/4] overflow-hidden bg-neutral-900 cursor-pointer"
+                      >
+                        <img
+                          src={scan.imageUrl}
+                          alt={scan.title}
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                          referrerPolicy="no-referrer"
+                        />
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                          <span className="px-4 py-2 rounded-xl bg-black/80 text-[#d4af37] text-xs font-bold border border-[#d4af37]/40 flex items-center gap-1.5 shadow-xl">
+                            <ZoomIn className="w-4 h-4" />
+                            <span>Phóng To Bản Gốc</span>
+                          </span>
+                        </div>
+                        <div className="absolute top-3 left-3 px-3 py-1 rounded-xl bg-black/70 backdrop-blur-md text-[#d4af37] text-xs font-bold border border-white/10">
+                          Trang {scan.page}
+                        </div>
+                        <div className="absolute bottom-3 left-3 right-3 px-3 py-1.5 rounded-xl bg-black/70 backdrop-blur-md text-white text-xs font-semibold border border-white/10">
+                          {scan.priceRange}
+                        </div>
+                      </div>
+
+                      {/* Detail Info */}
+                      <div className="p-5">
+                        <h4 className="font-display text-base font-bold text-white group-hover:text-[#d4af37] transition-colors">
+                          {scan.title}
+                        </h4>
+                        <p className="text-xs text-neutral-300 mt-2 line-clamp-3 leading-relaxed font-light">
+                          {scan.description}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="p-5 pt-0 flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setActiveScanPage(scan)}
+                        className="flex-1 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-semibold text-neutral-200 border border-white/10 flex items-center justify-center gap-1.5 cursor-pointer transition-colors"
+                      >
+                        <Eye className="w-3.5 h-3.5 text-[#d4af37]" />
+                        <span>Xem Bản Rõ Nét</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleOpenBooking('table', undefined, `Đặt tiệc theo ${scan.title} (${scan.priceRange})`)}
+                        className="px-3.5 py-2 rounded-xl bg-[#d4af37]/20 hover:bg-[#d4af37]/30 text-xs font-bold text-[#d4af37] border border-[#d4af37]/30 cursor-pointer transition-colors"
+                      >
+                        Đặt Ngay
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* TAB 3: MÓN ĐẶC SẢN GỌI MÓN (A LA CARTE) */}
+          {restaurantSubTab === 'alacarte' && (
+            <div className="space-y-8 animate-in fade-in duration-300">
+              {/* Filter Tabs for A La Carte */}
+              <div className="flex flex-wrap items-center justify-center gap-2 mb-8">
+                {[
+                  { id: 'all', label: 'Tất Cả Món Ngon' },
+                  { id: 'crab', label: 'Cua Cà Mau Trứ Danh' },
+                  { id: 'seafood', label: 'Hải Sản Đất Mũi' },
+                  { id: 'local', label: 'Món Đồng & Lẩu Mắm' },
+                  { id: 'banquet', label: 'Set Yến Tiệc VIP' },
+                ].map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setMenuFilter(tab.id as any)}
+                    className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all cursor-pointer whitespace-nowrap ${
+                      menuFilter === tab.id
+                        ? 'bg-[#d4af37] text-black font-semibold shadow-lg shadow-[#d4af37]/20'
+                        : 'bg-white/5 text-neutral-300 hover:text-white hover:bg-white/10 border border-white/10'
+                    }`}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Menu Items Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredMenu.map((item) => (
+                  <div
+                    key={item.id}
+                    className="liquid-glass-card rounded-3xl overflow-hidden border border-white/10 flex flex-col justify-between group"
+                  >
+                    <div>
+                      {/* Dish Image */}
+                      <div className="relative aspect-[4/3] overflow-hidden bg-neutral-900">
+                        <img
+                          src={item.image}
+                          alt={item.name}
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                          referrerPolicy="no-referrer"
+                          onError={(e) => {
+                            (e.currentTarget as HTMLElement).style.display = 'none';
+                          }}
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+
+                        {item.badge && (
+                          <div className="absolute top-3 left-3 py-1 px-2.5 rounded-lg bg-[#d4af37] text-black text-[11px] font-semibold shadow-sm">
+                            {item.badge}
+                          </div>
+                        )}
+
+                        <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-xs text-neutral-200">
+                          <span className="text-[11px] text-[#f4e8d0] font-medium">
+                            {item.highlight}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Dish Info */}
+                      <div className="p-5">
+                        <div className="flex items-start justify-between gap-3 mb-2">
+                          <h3 className="font-display text-base font-bold text-white group-hover:text-[#d4af37] transition-colors leading-snug">
+                            {item.name}
+                          </h3>
+                          <div className="text-right whitespace-nowrap">
+                            <span className="text-sm font-bold text-[#d4af37] font-display tabular-nums">
+                              {item.price}
+                            </span>
+                            <span className="text-[10px] text-neutral-400 block">{item.unit}</span>
+                          </div>
+                        </div>
+
+                        <p className="text-xs text-neutral-300 leading-relaxed font-light line-clamp-3">
+                          {item.description}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="p-5 pt-0">
+                      <button
+                        onClick={() => handleOpenBooking('table', undefined, item.name)}
+                        className="w-full liquid-btn-ghost py-2.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer hover:border-[#d4af37]/40"
+                      >
+                        <Utensils className="w-3.5 h-3.5 text-[#d4af37]" />
+                        <span>Đặt Bàn Thưởng Thức Món Này</span>
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Restaurant Booking Callout Banner */}
           <div className="mt-12 liquid-glass p-6 sm:p-8 rounded-3xl border border-white/15 flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="space-y-1 text-center md:text-left">
               <span className="text-xs uppercase tracking-wider text-[#d4af37] font-semibold">
@@ -593,20 +1016,286 @@ export default function HomePage({
                 Quý Khách Cần Đặt Phòng Lạnh VIP Hoặc Tiệc Cua Số Lượng Lớn?
               </h3>
               <p className="text-xs text-neutral-300">
-                Nhà hàng Ánh Nguyệt có 8 phòng ăn riêng tư từ 8 đến 40 khách, trang bị máy lạnh và karaoke âm thanh chuẩn.
+                Nhà hàng Ánh Nguyệt có 8 phòng ăn riêng tư từ 8 đến 40 khách, sảnh tiệc 500 khách, phục vụ âm thanh và karaoke hiện đại.
               </p>
             </div>
             <div className="flex items-center gap-3">
               <button
                 onClick={() => handleOpenBooking('table')}
-                className="liquid-btn-champagne px-6 py-3 rounded-2xl text-xs sm:text-sm font-semibold whitespace-nowrap cursor-pointer"
+                className="liquid-btn-champagne px-6 py-3 rounded-2xl text-xs sm:text-sm font-semibold whitespace-nowrap cursor-pointer shadow-lg shadow-[#d4af37]/20"
               >
-                Đặt Phòng VIP Ngay
+                Đặt Bàn / Phòng VIP Ngay
               </button>
             </div>
           </div>
         </div>
       </section>
+
+      {/* ==========================================================
+          THƯ VIỆN HÌNH ẢNH & GALLERY CHÍNH THỨC
+          (Toàn bộ hình ảnh thực tế từ website https://anhnguyethotel.com)
+          ========================================================== */}
+      <section id="gallery" className="py-20 px-4 sm:px-6 lg:px-8 border-t border-white/5 relative bg-[#090d12]">
+        <div className="max-w-7xl mx-auto">
+          {/* Section Header */}
+          <div className="text-center max-w-3xl mx-auto mb-10 space-y-3">
+            <span className="text-xs uppercase tracking-[0.25em] text-[#d4af37] font-semibold">
+              Hình Ảnh Thực Tế Từ Website Anhnguyethotel.com
+            </span>
+            <h2 className="text-2xl sm:text-4xl font-bold font-display text-white">
+              Thư Viện Ảnh Khách Sạn & Nhà Hàng Ánh Nguyệt
+            </h2>
+            <p className="text-neutral-400 text-sm sm:text-base leading-relaxed">
+              Trọn bộ hình ảnh thực tế không gian phòng nghỉ, ẩm thực đặc sản Cà Mau, sảnh tiệc cưới hội nghị, hồ bơi ngoài trời và 6 trang scan thực đơn gốc năm 2025.
+            </p>
+          </div>
+
+          {/* Gallery Category Filter Tabs */}
+          <div className="flex flex-wrap items-center justify-center gap-2 mb-12">
+            {[
+              { id: 'all', label: `Tất Cả Ảnh (${HOTEL_GALLERY_IMAGES.length})` },
+              { id: 'rooms', label: 'Phòng Nghỉ & Khách Sạn' },
+              { id: 'restaurant', label: 'Nhà Hàng & Món Ăn' },
+              { id: 'menus', label: 'Bảng Thực Đơn Niêm Yết' },
+              { id: 'events', label: 'Hội Nghị & Tiệc Cưới' },
+              { id: 'pool', label: 'Hồ Bơi & Tiện Ích' },
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setGalleryFilter(tab.id as any)}
+                className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all cursor-pointer whitespace-nowrap ${
+                  galleryFilter === tab.id
+                    ? 'bg-[#d4af37] text-black font-semibold shadow-lg shadow-[#d4af37]/20'
+                    : 'bg-white/5 text-neutral-300 hover:text-white hover:bg-white/10 border border-white/10'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Gallery Images Grid - 3 Cột Chuẩn */}
+          {(() => {
+            const displayImages = galleryFilter === 'all'
+              ? HOTEL_GALLERY_IMAGES
+              : HOTEL_GALLERY_IMAGES.filter((img) => img.category === galleryFilter);
+
+            return (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {displayImages.map((img, index) => (
+                  <div
+                    key={img.id}
+                    onClick={() => setActiveLightboxIndex(index)}
+                    className="liquid-glass-card rounded-3xl overflow-hidden border border-white/10 group cursor-pointer flex flex-col justify-between"
+                  >
+                    <div>
+                      {/* Image Frame */}
+                      <div className="relative aspect-[4/3] overflow-hidden bg-neutral-900">
+                        <img
+                          src={img.imageUrl}
+                          alt={img.title}
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                          referrerPolicy="no-referrer"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
+
+                        {/* Top Category Badge */}
+                        <div className="absolute top-3 left-3 px-3 py-1 rounded-xl bg-black/60 backdrop-blur-md text-[11px] font-semibold text-[#d4af37] border border-white/15">
+                          {img.categoryLabel}
+                        </div>
+
+                        {/* Hover Overlay with Zoom Icon */}
+                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/30 backdrop-blur-[2px]">
+                          <span className="w-12 h-12 rounded-full bg-[#d4af37]/90 text-black flex items-center justify-center shadow-xl">
+                            <ZoomIn className="w-6 h-6" />
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Image Caption */}
+                      <div className="p-5">
+                        <h4 className="font-display text-base font-bold text-white group-hover:text-[#d4af37] transition-colors">
+                          {img.title}
+                        </h4>
+                        <p className="text-xs text-neutral-300 mt-2 line-clamp-2 leading-relaxed font-light">
+                          {img.caption}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="p-5 pt-0 flex items-center justify-between text-xs text-neutral-400 border-t border-white/5 pt-3">
+                      <span className="text-[11px] text-[#d4af37] flex items-center gap-1">
+                        <ImageIcon className="w-3.5 h-3.5" />
+                        <span>Xem chi tiết ảnh</span>
+                      </span>
+                      <ArrowUpRight className="w-4 h-4 text-neutral-400 group-hover:text-[#d4af37] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            );
+          })()}
+        </div>
+      </section>
+
+      {/* MODAL: Phóng To Bản Scan Thực Đơn Niêm Yết */}
+      {activeScanPage && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-in fade-in duration-200">
+          <div className="relative max-w-4xl w-full max-h-[90vh] bg-[#10151c] border border-white/15 rounded-3xl p-5 sm:p-6 overflow-y-auto flex flex-col shadow-2xl">
+            {/* Header */}
+            <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-4">
+              <div>
+                <span className="text-xs uppercase tracking-wider text-[#d4af37] font-semibold">
+                  Bản Scan Gốc Năm 2025 (Trang {activeScanPage.page})
+                </span>
+                <h3 className="text-lg sm:text-xl font-bold font-display text-white">
+                  {activeScanPage.title} — {activeScanPage.priceRange}
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setActiveScanPage(null)}
+                className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-neutral-300 hover:text-white transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* High-res Image */}
+            <div className="flex-1 overflow-auto rounded-2xl bg-black/60 border border-white/10 p-2 flex items-center justify-center">
+              <img
+                src={activeScanPage.fullImageUrl || activeScanPage.imageUrl}
+                alt={activeScanPage.title}
+                className="max-h-[65vh] w-auto object-contain rounded-xl"
+                referrerPolicy="no-referrer"
+              />
+            </div>
+
+            {/* Description & Footer Actions */}
+            <div className="mt-4 pt-4 border-t border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <p className="text-xs text-neutral-300 max-w-md font-light leading-relaxed">
+                {activeScanPage.description}
+              </p>
+              <div className="flex items-center gap-3">
+                <a
+                  href={`tel:${HOTEL_INFO.hotline.replace(/\s+/g, '')}`}
+                  className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-xs font-semibold text-white border border-white/10 flex items-center gap-1.5"
+                >
+                  <Phone className="w-3.5 h-3.5 text-[#d4af37]" />
+                  <span>Gọi Lễ Tân: {HOTEL_INFO.hotline}</span>
+                </a>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const page = activeScanPage;
+                    setActiveScanPage(null);
+                    handleOpenBooking('table', undefined, `Đặt tiệc ${page.title} (${page.priceRange})`);
+                  }}
+                  className="liquid-btn-champagne px-5 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap cursor-pointer shadow-md"
+                >
+                  Đặt Bàn Theo Thực Đơn Này
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL LIGHTBOX: Duyệt Xem Bộ Sưu Tập Ảnh Gallery Toàn Màn Hình */}
+      {activeLightboxIndex !== null && (() => {
+        const displayImages = galleryFilter === 'all'
+          ? HOTEL_GALLERY_IMAGES
+          : HOTEL_GALLERY_IMAGES.filter((img) => img.category === galleryFilter);
+        const currentImg = displayImages[activeLightboxIndex] || displayImages[0];
+
+        const handlePrev = () => {
+          setActiveLightboxIndex((prev) => (prev !== null && prev > 0 ? prev - 1 : displayImages.length - 1));
+        };
+
+        const handleNext = () => {
+          setActiveLightboxIndex((prev) => (prev !== null && prev < displayImages.length - 1 ? prev + 1 : 0));
+        };
+
+        return (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/90 backdrop-blur-lg animate-in fade-in duration-200">
+            {/* Close button */}
+            <button
+              type="button"
+              onClick={() => setActiveLightboxIndex(null)}
+              className="absolute top-4 right-4 z-20 p-2.5 rounded-full bg-black/60 text-neutral-300 hover:text-white border border-white/15 hover:bg-white/10 transition-colors cursor-pointer"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            {/* Prev button */}
+            <button
+              type="button"
+              onClick={handlePrev}
+              className="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-black/60 text-white hover:bg-[#d4af37] hover:text-black border border-white/15 transition-all cursor-pointer"
+              aria-label="Ảnh trước"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+
+            {/* Next button */}
+            <button
+              type="button"
+              onClick={handleNext}
+              className="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-black/60 text-white hover:bg-[#d4af37] hover:text-black border border-white/15 transition-all cursor-pointer"
+              aria-label="Ảnh tiếp theo"
+            >
+              <ChevronRight className="w-5 h-5" />
+            </button>
+
+            {/* Lightbox Content Container */}
+            <div className="relative max-w-5xl w-full max-h-[92vh] flex flex-col items-center justify-center">
+              <div className="relative overflow-hidden rounded-2xl bg-black border border-white/10 max-h-[72vh] flex items-center justify-center">
+                <img
+                  src={currentImg.imageUrl}
+                  alt={currentImg.title}
+                  className="max-h-[72vh] w-auto object-contain rounded-2xl select-none"
+                  referrerPolicy="no-referrer"
+                />
+              </div>
+
+              {/* Caption and details below */}
+              <div className="w-full max-w-2xl mt-4 p-4 rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-center sm:text-left">
+                <div>
+                  <div className="flex items-center justify-center sm:justify-start gap-2">
+                    <span className="text-[11px] px-2 py-0.5 rounded-md bg-[#d4af37]/20 text-[#d4af37] font-semibold border border-[#d4af37]/30">
+                      {currentImg.categoryLabel}
+                    </span>
+                    <span className="text-xs text-neutral-400">
+                      {activeLightboxIndex + 1} / {displayImages.length}
+                    </span>
+                  </div>
+                  <h4 className="font-display text-base font-bold text-white mt-1">
+                    {currentImg.title}
+                  </h4>
+                  <p className="text-xs text-neutral-300 font-light mt-0.5">
+                    {currentImg.caption}
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveLightboxIndex(null);
+                    if (currentImg.category === 'rooms') {
+                      handleOpenBooking('room');
+                    } else {
+                      handleOpenBooking('table', undefined, currentImg.title);
+                    }
+                  }}
+                  className="liquid-btn-champagne px-5 py-2 rounded-xl text-xs font-bold whitespace-nowrap cursor-pointer shadow-md shrink-0 mx-auto sm:mx-0"
+                >
+                  {currentImg.category === 'rooms' ? 'Đặt Phòng Ngay' : 'Đặt Bàn Ngay'}
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* ==========================================================
           TIỆN ÍCH KHÁCH SẠN & SỰ KIỆN (Bento Glass Grid)

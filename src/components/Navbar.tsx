@@ -105,6 +105,13 @@ export const Navbar: React.FC<NavbarProps> = ({
               >
                 Nhà Hàng
               </a>
+              <a 
+                href="#gallery" 
+                onClick={(e) => handleScrollToSection(e, 'gallery')}
+                className="px-3.5 py-1 rounded-full text-xs xl:text-sm font-medium text-neutral-300 hover:text-white hover:bg-white/10 transition-all whitespace-nowrap cursor-pointer"
+              >
+                Thư Viện Ảnh
+              </a>
               <button 
                 onClick={handleNewsNavigation}
                 className={`px-3.5 py-1 rounded-full text-xs xl:text-sm font-medium transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
@@ -191,6 +198,13 @@ export const Navbar: React.FC<NavbarProps> = ({
               className="px-3.5 py-2.5 rounded-xl hover:bg-white/5 hover:text-[#d4af37] transition-colors"
             >
               Nhà Hàng
+            </a>
+            <a 
+              href="#gallery" 
+              onClick={(e) => handleScrollToSection(e, 'gallery')}
+              className="px-3.5 py-2.5 rounded-xl hover:bg-white/5 hover:text-[#d4af37] transition-colors"
+            >
+              Thư Viện Ảnh
             </a>
             <button 
               onClick={handleNewsNavigation}
