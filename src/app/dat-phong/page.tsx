@@ -605,7 +605,8 @@ export default function DatPhongPage({ onBackToHome }: DatPhongPageProps) {
           <p className="font-semibold text-white text-sm">Khách Sạn & Nhà Hàng Ánh Nguyệt Cà Mau</p>
           <p className="text-neutral-300">Địa chỉ: 207 Phan Ngọc Hiển, Phường Tân Thành, Tỉnh Cà Mau</p>
           <p className="text-neutral-400">
-            Hotline: <a href={`tel:${HOTEL_INFO.hotline.replace(/\s+/g, '')}`} className="text-[#d4af37] font-semibold">{HOTEL_INFO.hotline}</a> · 
+            Hotline Lễ Tân: <a href={`tel:${HOTEL_INFO.hotline.replace(/\s+/g, '')}`} className="text-[#d4af37] font-semibold">{HOTEL_INFO.hotline}</a> · 
+            Hotline Quản Lý: <a href={`tel:${HOTEL_INFO.phoneMobile.replace(/\s+/g, '')}`} className="text-[#d4af37] font-semibold">{HOTEL_INFO.phoneMobile}</a> · 
             Email: <a href="mailto:anhnguyethotel@gmail.com" className="text-[#d4af37] font-semibold">anhnguyethotel@gmail.com</a>
           </p>
           <p className="pt-2 text-neutral-500 text-[11px]">© 2026 Ánh Nguyệt Hotel & Dining. All rights reserved.</p>

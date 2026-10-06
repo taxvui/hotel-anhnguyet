@@ -96,7 +96,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
             <div className="p-4 rounded-2xl bg-white/5 border border-white/10 text-xs text-neutral-400 max-w-md mx-auto space-y-1">
               <div><span className="text-neutral-300 font-medium">Dịch vụ:</span> {activeTab === 'room' ? 'Đặt phòng nghỉ VIP' : 'Đặt bàn tiệc ẩm thực'}</div>
               <div><span className="text-neutral-300 font-medium">Thời gian:</span> {dateIn} {activeTab === 'table' ? `lúc ${timeSlot}` : `đến ${dateOut}`}</div>
-              <div><span className="text-neutral-300 font-medium">Hotline hỗ trợ tức thì:</span> <a href={`tel:${HOTEL_INFO.hotline.replace(/\s+/g, '')}`} className="text-[#d4af37] font-semibold underline">{HOTEL_INFO.hotline}</a></div>
+              <div><span className="text-neutral-300 font-medium">Hotline hỗ trợ:</span> Lễ Tân <a href={`tel:${HOTEL_INFO.hotline.replace(/\s+/g, '')}`} className="text-[#d4af37] font-semibold underline">{HOTEL_INFO.hotline}</a> · Quản Lý <a href={`tel:${HOTEL_INFO.phoneMobile.replace(/\s+/g, '')}`} className="text-[#d4af37] font-semibold underline">{HOTEL_INFO.phoneMobile}</a></div>
             </div>
             <button
               onClick={handleReset}

@@ -768,13 +768,13 @@ export default function HomePage({
                   <Phone className="w-5 h-5 text-[#d4af37] shrink-0 mt-0.5" />
                   <div>
                     <div className="text-xs font-semibold text-white">Điện thoại đặt phòng & bàn tiệc</div>
-                    <div className="text-xs sm:text-sm text-[#d4af37] font-semibold mt-0.5 flex gap-3">
+                    <div className="text-xs sm:text-sm text-[#d4af37] font-semibold mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-1">
                       <a href={`tel:${HOTEL_INFO.hotline.replace(/\s+/g, '')}`} className="hover:underline">
-                        {HOTEL_INFO.hotline}
+                        Lễ Tân: {HOTEL_INFO.hotline}
                       </a>
-                      <span>·</span>
+                      <span className="text-neutral-500">·</span>
                       <a href={`tel:${HOTEL_INFO.phoneMobile.replace(/\s+/g, '')}`} className="hover:underline">
-                        {HOTEL_INFO.phoneMobile}
+                        Quản Lý: {HOTEL_INFO.phoneMobile}
                       </a>
                     </div>
                   </div>
@@ -897,10 +897,10 @@ export default function HomePage({
                 Hỗ Trợ Trực Tiếp
               </div>
               <p className="text-xs text-neutral-300">
-                Hotline Lễ Tân: <span className="text-[#d4af37] font-semibold">{HOTEL_INFO.hotline}</span>
+                Hotline Lễ Tân: <a href={`tel:${HOTEL_INFO.hotline.replace(/\s+/g, '')}`} className="text-[#d4af37] font-semibold hover:underline">{HOTEL_INFO.hotline}</a>
               </p>
               <p className="text-xs text-neutral-300">
-                Hotline Quản Lý: <span className="text-[#d4af37] font-semibold">{HOTEL_INFO.phoneMobile}</span>
+                Hotline Quản Lý: <a href={`tel:${HOTEL_INFO.phoneMobile.replace(/\s+/g, '')}`} className="text-[#d4af37] font-semibold hover:underline">{HOTEL_INFO.phoneMobile}</a>
               </p>
               <p className="text-xs text-neutral-300">
                 Email: <a href="mailto:anhnguyethotel@gmail.com" className="text-[#d4af37] hover:underline font-semibold">anhnguyethotel@gmail.com</a>

@@ -447,7 +447,8 @@ export default function TinTucPage({ onBackToHome, onOpenBooking }: TinTucPagePr
             Địa chỉ: 207 Phan Ngọc Hiển, Phường Tân Thành, Tỉnh Cà Mau
           </p>
           <p className="text-neutral-400">
-            Hotline: <a href={`tel:${HOTEL_INFO.hotline.replace(/\s+/g, '')}`} className="text-[#d4af37] font-semibold">{HOTEL_INFO.hotline}</a> · 
+            Hotline Lễ Tân: <a href={`tel:${HOTEL_INFO.hotline.replace(/\s+/g, '')}`} className="text-[#d4af37] font-semibold">{HOTEL_INFO.hotline}</a> · 
+            Hotline Quản Lý: <a href={`tel:${HOTEL_INFO.phoneMobile.replace(/\s+/g, '')}`} className="text-[#d4af37] font-semibold">{HOTEL_INFO.phoneMobile}</a> · 
             Email: <a href="mailto:anhnguyethotel@gmail.com" className="text-[#d4af37] font-semibold">anhnguyethotel@gmail.com</a>
           </p>
           <div className="pt-4 text-[11px] text-neutral-500">
